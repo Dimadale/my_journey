@@ -1,0 +1,68 @@
+** start of main.py **
+
+def add_time(start, duration, day=None):
+    new_hour = 0
+    new_minute = 0
+   
+# Split hours and minutes for both start and duration
+    time_part, period = start.split()
+    hour, minute = map(int, time_part.split(':'))
+    dur_hour, dur_minute = map(int, duration.split(':'))
+ 
+# Convert start to 24 hour clock
+    if period == 'PM' and hour != 12:
+        hour += 12
+    elif period == 'AM' and hour == 12:
+        hour = 0
+
+    new_minute = (dur_minute + minute) % 60    
+    extra_hour = (dur_minute + minute) // 60    
+# Add hours and converts back to 12 hr
+    new_hour = (dur_hour + hour + extra_hour) % 24
+    days_later =  (dur_hour + hour + extra_hour) // 24
+    if new_hour == 0:
+        new_hour = 12
+        period = 'AM'
+    elif new_hour < 12:
+        period = 'AM'
+    elif new_hour == 12:
+        period = 'PM'
+    else:
+        new_hour -= 12
+        period = 'PM'
+
+# Handles days later rule
+    if days_later == 1:
+        day_info = '(next day)'
+    elif days_later > 1:
+        day_info = f'({days_later} days later)'
+    else:
+        day_info = ''
+
+    new_day= ''
+# Calculates what day of the week it would be
+    if day:
+        day = day.lower()
+        n = days_later
+        days_of_week = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+    # Finds index for the start day
+        day_of_week = days_of_week.index(day)
+    # Account for being more than 7 days later 
+        new_index = (day_of_week + n ) % 7  
+        new_day = days_of_week[new_index]
+        new_day = new_day.capitalize()
+
+# Only returns period comma if the day is involved
+    if new_day:
+        new_time = (f'{new_hour}:{new_minute:02d} {period}, {new_day} {day_info}')
+    else:
+        new_time = (f'{new_hour}:{new_minute:02d} {period} {day_info}')
+
+    return new_time.strip()
+
+
+print(add_time('11:59 PM', '24:05', 'Wednesday'))
+
+
+** end of main.py **
+
